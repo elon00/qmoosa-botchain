@@ -35,7 +35,7 @@ async function runReaAudit() {
     tool: 'REA (Reverse Engineering & Architectural Analysis)',
     upstream: 'https://github.com/morluto/rea',
     timestamp: new Date().toISOString(),
-    status: 'AUDIT_PASSED',
+    status: 'STATIC_HEURISTIC_ONLY_NOT_SECURITY_AUDIT',
     contractAudit: {
       contract: 'contracts/QBOTToken.sol',
       invariants: {
@@ -44,7 +44,7 @@ async function runReaAudit() {
         hasInitialSupply,
         hasPauseModifier,
       },
-      securityScore: 100,
+      securityScore: null,
     },
     dependencyAudit: {
       dependenciesCount: Object.keys(pkg.dependencies || {}).length,
@@ -53,7 +53,7 @@ async function runReaAudit() {
       pqcStandard: 'NIST FIPS 204 ML-DSA-65',
       paymentProtocol: '@x402/express (HTTP 402 Paywall)',
     },
-    findings: [],
+    findings: ['Source-text heuristics are not an independent contract audit; compile, fuzz, prove invariants, and engage a reviewer.'],
   };
 
   const reportsDir = path.resolve('reports');
@@ -64,7 +64,7 @@ async function runReaAudit() {
   const outputPath = path.join(reportsDir, 'REA_ANALYSIS.json');
   fs.writeFileSync(outputPath, JSON.stringify(report, null, 2));
 
-  console.log(`✅ REA Audit complete! Invariants verified. Output: ${outputPath}`);
+  console.log(`REA heuristic inspection complete (NOT a security audit). Output: ${outputPath}`);
 }
 
 runReaAudit().catch((err) => {
