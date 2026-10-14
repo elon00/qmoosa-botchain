@@ -1,5 +1,8 @@
 # QMOOSA BOT CHAIN — Autonomous AI Payment & Agentic Hub
 
+> **Audit correction (15 Oct 2026):** The earlier `100/100 VERIFIED` statement is **not a production certification**. Previous score calculations could award full marks from source-file presence and one RPC response. See [Evidence-First Scorecard](docs/EVIDENCE_FIRST_SCORECARD.md) for missing proof and mandatory release blockers. Mainnet remains locked.
+
+
 [![Reality CI/CD](https://github.com/elon00/qmoosa-botchain/actions/workflows/reality_ci.yml/badge.svg)](https://github.com/elon00/qmoosa-botchain/actions/workflows/reality_ci.yml)
 [![CD Preview](https://github.com/elon00/qmoosa-botchain/actions/workflows/deploy_preview.yml/badge.svg)](https://github.com/elon00/qmoosa-botchain/actions/workflows/deploy_preview.yml)
 [![BOT Chain Testnet](https://img.shields.io/badge/BOT%20Chain%20Testnet-Chain%20968-00f0ff.svg)](https://scan.bohr.life/)
