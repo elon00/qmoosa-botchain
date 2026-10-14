@@ -1,0 +1,38 @@
+{
+  "name": "qmoosa-botchain",
+  "version": "1.0.0",
+  "description": "QMOOSA BOT CHAIN — Autonomous AI Payment & Agentic Hub (x402 Protocol on BOT Chain, Conway Automaton, NIST FIPS 204 PQC, Zero-Mock Reality Engine)",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx src/server.ts",
+    "build": "tsc",
+    "test": "tsx --test tests/lane1/*.test.ts",
+    "test:lane1": "tsx --test tests/lane1/*.test.ts",
+    "test:lane2": "tsx --test tests/lane2/*.test.ts",
+    "mission:verify": "node dist/scripts/reality_gate.js",
+    "reality:gate": "node dist/scripts/reality_gate.js",
+    "rea:audit": "node dist/scripts/rea_audit.js",
+    "raven:rsi": "node dist/scripts/raven_rsi.js"
+  },
+  "dependencies": {
+    "@x402/core": "^2.16.0",
+    "@x402/evm": "^2.16.0",
+    "@x402/express": "^2.16.0",
+    "@x402/paywall": "^2.16.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4",
+    "viem": "^2.23.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.13.0",
+    "@types/qrcode": "^1.5.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

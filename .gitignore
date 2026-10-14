@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+*.log
+sandbox/tools/rea/
+sandbox/tools/raven/
+reports/runtime/

@@ -1,0 +1,23 @@
+{
+  "tool": "REA (Reverse Engineering & Architectural Analysis)",
+  "upstream": "https://github.com/morluto/rea",
+  "timestamp": "2026-10-14T21:24:24.220Z",
+  "status": "AUDIT_PASSED",
+  "contractAudit": {
+    "contract": "contracts/QBOTToken.sol",
+    "invariants": {
+      "hasAccessControl": true,
+      "hasInflationCeiling": true,
+      "hasInitialSupply": true,
+      "hasPauseModifier": true
+    },
+    "securityScore": 100
+  },
+  "dependencyAudit": {
+    "dependenciesCount": 8,
+    "devDependenciesCount": 5,
+    "pqcStandard": "NIST FIPS 204 ML-DSA-65",
+    "paymentProtocol": "@x402/express (HTTP 402 Paywall)"
+  },
+  "findings": []
+}

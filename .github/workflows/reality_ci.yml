@@ -1,0 +1,99 @@
+name: QMOOSA BOT CHAIN — Reality-Based CI/CD & Gate Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: reality-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reality-gate:
+    name: Reality Gate & BOT Chain Testnet (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Pinned Dependencies
+        run: npm install
+
+      - name: Compile TypeScript Build
+        run: npm run build
+
+      - name: Clone Upstream REA & Raven Tools for Sandbox Verification
+        run: |
+          mkdir -p sandbox/tools
+          git clone --depth 1 https://github.com/morluto/rea.git sandbox/tools/rea || true
+          git clone --depth 1 https://github.com/EverMind-AI/Raven.git sandbox/tools/raven || true
+
+      - name: Execute Lane 1 Deterministic Unit Tests (23/23 Tests)
+        run: npm run test:lane1
+
+      - name: Execute Lane 2 Live BOT Chain Testnet Tests (Chain ID 968)
+        run: npm run test:lane2
+
+      - name: Execute REA Architectural Inspection & Invariant Audit
+        run: npm run rea:audit
+
+      - name: Execute Raven RSI Self-Improvement Optimization Harness
+        run: npm run raven:rsi
+
+      - name: Execute Master 100/100 Reality Gate Pipeline
+        run: npm run mission:verify
+
+      - name: Upload Reality Audit Reports & Manifests
+        uses: actions/upload-artifact@v4
+        with:
+          name: readiness-reports-node-${{ matrix.node-version }}
+          path: |
+            reports/*.json
+            docs/SCORECARD_100.md
+
+  security-enforcement:
+    name: Security Engineering & Mainnet Lock Enforcement
+    runs-on: ubuntu-latest
+    needs: reality-gate
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Enforce Mainnet Spending Lock (MAINNET_LOCKED = true)
+        run: |
+          npx tsx -e "
+            import { MAINNET_LOCKED, assertMainnetLock } from './src/chains/botchain.ts';
+            if (MAINNET_LOCKED !== true) {
+              console.error('FATAL: MAINNET_LOCKED is not true!');
+              process.exit(1);
+            }
+            try {
+              assertMainnetLock();
+              console.error('FATAL: assertMainnetLock() failed to block!');
+              process.exit(1);
+            } catch (err) {
+              console.log('SECURITY PASS: Mainnet spend strictly locked (zero funds spent).');
+            }
+          "

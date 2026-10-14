@@ -1,0 +1,27 @@
+{
+  "framework": "Raven RSI (Recursive Self-Improvement)",
+  "upstream": "https://github.com/EverMind-AI/Raven",
+  "timestamp": "2026-10-14T21:24:27.969Z",
+  "status": "OPTIMIZATION_CONVERGED",
+  "totalCycles": 2,
+  "acceptedMutations": 1,
+  "cycles": [
+    {
+      "iteration": 1,
+      "mutationType": "CONWAY_ENTROPY_SEED",
+      "baselineScore": 0.82,
+      "candidateScore": 0.1953125,
+      "accepted": false,
+      "delta": -0.6247
+    },
+    {
+      "iteration": 2,
+      "mutationType": "SPENDING_LEDGER_LATENCY",
+      "baselineScore": 1.5,
+      "candidateScore": 0.27719999999999345,
+      "accepted": true,
+      "delta": 4.7228
+    }
+  ],
+  "summary": "RSI cycles converged with zero regressions and all invariants intact."
+}

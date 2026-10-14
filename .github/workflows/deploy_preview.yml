@@ -1,0 +1,65 @@
+name: QMOOSA BOT CHAIN — Continuous Delivery Preview & Smoke Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview-smoke-test:
+    name: Build, Spin Up Gateway & Automated Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Compile TypeScript Build
+        run: npm run build
+
+      - name: Launch QMOOSA BOT CHAIN Gateway in Background
+        run: |
+          PORT=4021 node dist/src/server.js &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          sleep 5
+
+      - name: Smoke Test Health & Live BOT Chain Testnet Connectivity
+        run: |
+          curl -s http://localhost:4021/health | grep '"ok":true'
+          curl -s http://localhost:4021/api/health | grep '"chainId":968'
+
+      - name: Smoke Test x402 AI Agentics Bazaar Catalog
+        run: |
+          curl -s http://localhost:4021/api/bazaar | grep '"currency":"QBOT / tBOT"'
+
+      - name: Verify HTTP 402 Paywall Protection on Protected Endpoint
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4021/api/v1/agent/conway-predict)
+          if [ "$HTTP_CODE" -eq 402 ]; then
+            echo "SUCCESS: Endpoint correctly protected by HTTP 402 Paywall."
+          else
+            echo "ERROR: Expected HTTP 402, received $HTTP_CODE"
+            exit 1
+          fi
+
+      - name: Shutdown Gateway Gracefully
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
