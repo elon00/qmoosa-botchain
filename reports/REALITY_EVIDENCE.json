@@ -5,8 +5,8 @@
   "status": "100/100 VERIFIED",
   "mainnetLocked": true,
   "testnetChainId": 968,
-  "testnetBlockNumber": "26871865",
-  "timestamp": "2026-10-14T21:29:44.912Z",
+  "testnetBlockNumber": "26872699",
+  "timestamp": "2026-10-14T21:40:10.790Z",
   "categories": [
     {
       "category": "Architecture & dependencies",
@@ -69,7 +69,7 @@
       "pointsAllocated": 12,
       "pointsAwarded": 12,
       "status": "PASS",
-      "evidence": "Live BOT Chain Testnet verified on-chain at block #26871865 (Chain ID 968) + 23 Lane 1 tests passing"
+      "evidence": "Live BOT Chain Testnet verified on-chain at block #26872699 (Chain ID 968) + 23 Lane 1 tests passing"
     },
     {
       "category": "CI/CD & observability",

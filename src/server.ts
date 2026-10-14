@@ -2,9 +2,8 @@
  * QMOOSA BOT CHAIN — Autonomous AI Payment & Agentic Hub Server
  * 
  * Implements:
- * - Official @x402/express middleware & @x402/evm ExactEvmScheme
- * - Network: BOT Chain Testnet (eip155:968)
- * - Native Token: tBOT / Utility Token: QBOT
+ * - Standards-compliant x402 Payment Middleware for BOT Chain Testnet (eip155:968)
+ * - Targets: Native tBOT and ERC-20 QBOT Token (0x9680000000000000000000000000000000000402)
  * - Deterministic Conway Automaton engine & 10-state transaction automaton
  * - NIST FIPS 204 ML-DSA-65 PQC post-quantum signing
  * - Multi-Model AI Agentics & Spending Policy Controller
@@ -12,15 +11,11 @@
  * - Cyberpunk Web 4.0 interactive UI dashboard
  */
 
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import { paymentMiddleware, x402ResourceServer } from '@x402/express';
-import { ExactEvmScheme } from '@x402/evm/exact/server';
-import { HTTPFacilitatorClient } from '@x402/core/server';
-import { createPaywall } from '@x402/paywall';
-import { evmPaywall } from '@x402/paywall/evm';
 
 import { checkRpcHealth, MAINNET_LOCKED, BOTCHAIN_TESTNET } from './chains/botchain.js';
+import { TransactionVerifier } from './chains/transaction-verifier.js';
 import { BAZAAR_SERVICES, getServiceByEndpoint } from './bazaar/catalog.js';
 import { ConwayGrid, TransactionAutomaton } from './core/conway.js';
 import { MLDSAEngine } from './crypto/mldsa.js';
@@ -34,7 +29,7 @@ dotenv.config();
 export const PORT = Number(process.env.PORT ?? 4021);
 export const NETWORK = 'eip155:968'; // BOT Chain Testnet
 export const PAY_TO = process.env.PAY_TO ?? '0xC3376296a18ef364eA19287203EEd7a87f18e738';
-export const FACILITATOR_URL = process.env.X402_FACILITATOR_URL ?? 'https://facilitator.vativ.io';
+export const TOKEN_CONTRACT = process.env.QBOT_TESTNET_TOKEN_ADDRESS ?? '0x9680000000000000000000000000000000000402';
 
 export const app = express();
 app.use(express.json());
@@ -43,6 +38,8 @@ app.use(express.json());
 const agentPolicy = new AgentPolicyEngine(1.0, 0.01);
 const modelRouter = new MultiModelRouter();
 const pqcKeyPair = MLDSAEngine.generateKeyPair();
+const txVerifier = new TransactionVerifier();
+
 let conwayState = new ConwayGrid(16, 16, [
   [2, 1],
   [3, 2],
@@ -51,66 +48,71 @@ let conwayState = new ConwayGrid(16, 16, [
   [3, 3],
 ]);
 
-// Wire x402 Resource Server & Paywall
-const facilitator = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
-const resourceServer = new x402ResourceServer(facilitator).register(
-  NETWORK,
-  new ExactEvmScheme()
-);
+// --- Standards-Compliant x402 Paywall Adapter Middleware ---
+interface X402ProtectedRoutes {
+  [routePattern: string]: {
+    price: string;
+    description: string;
+  };
+}
 
-const paywall = createPaywall().withNetwork(evmPaywall).build();
+const PROTECTED_ROUTES: X402ProtectedRoutes = {
+  '/api/v1/agent/conway-predict': { price: '0.001 QBOT', description: 'QMOOSA Conway Neural Predictor' },
+  '/api/v1/agent/pqc-seal': { price: '0.002 QBOT', description: 'NIST FIPS 204 PQC Attestation Seal' },
+  '/api/v1/agent/depin-telemetry': { price: '0.003 QBOT', description: 'BOT Chain DePIN Telemetry & Oracle' },
+  '/api/v1/agent/reasoning': { price: '0.005 QBOT', description: 'Multi-Model Autonomous Agent Reasoning Core' },
+};
 
-// --- 1. x402 Paywall Middleware for Protected Microservices ---
-app.use(
-  paymentMiddleware(
-    {
-      'POST /api/v1/agent/conway-predict': {
-        accepts: {
-          scheme: 'exact',
-          price: '$0.001',
-          network: NETWORK,
-          payTo: PAY_TO,
-        },
-        description: 'QMOOSA Conway Neural Predictor — 0.001 QBOT',
-      },
-      'POST /api/v1/agent/pqc-seal': {
-        accepts: {
-          scheme: 'exact',
-          price: '$0.002',
-          network: NETWORK,
-          payTo: PAY_TO,
-        },
-        description: 'NIST FIPS 204 PQC Attestation Seal — 0.002 QBOT',
-      },
-      'POST /api/v1/agent/depin-telemetry': {
-        accepts: {
-          scheme: 'exact',
-          price: '$0.003',
-          network: NETWORK,
-          payTo: PAY_TO,
-        },
-        description: 'BOT Chain DePIN Telemetry & Hardware Oracle — 0.003 QBOT',
-      },
-      'POST /api/v1/agent/reasoning': {
-        accepts: {
-          scheme: 'exact',
-          price: '$0.005',
-          network: NETWORK,
-          payTo: PAY_TO,
-        },
-        description: 'Multi-Model Autonomous Agent Reasoning Core — 0.005 QBOT',
-      },
-    },
-    resourceServer,
-    {
-      appName: 'QMOOSA BOT CHAIN — Autonomous AI Payment & Agentic Hub',
-      testnet: true,
-    },
-    paywall
-  )
-);
+export function createX402PaywallMiddleware() {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const routeConfig = PROTECTED_ROUTES[req.path];
+    if (!routeConfig || req.method !== 'POST') {
+      return next();
+    }
 
-// --- 2. Public Web 4.0 Dashboard ---
+    const authHeader = req.headers['authorization'] || req.headers['x-payment'];
+    const txHash = req.body?.txHash || (typeof authHeader === 'string' && authHeader.startsWith('x402 ') ? authHeader.slice(5) : null);
+
+    if (!txHash) {
+      // Issue official HTTP 402 Payment Required response
+      res.setHeader(
+        'WWW-Authenticate',
+        `x402 scheme="exact", network="${NETWORK}", token="${TOKEN_CONTRACT}", payTo="${PAY_TO}", price="${routeConfig.price}"`
+      );
+      return res.status(402).json({
+        statusCode: 402,
+        error: 'Payment Required',
+        message: `HTTP 402 Payment Required: ${routeConfig.description}`,
+        network: NETWORK,
+        scheme: 'exact',
+        price: routeConfig.price,
+        token: TOKEN_CONTRACT,
+        payTo: PAY_TO,
+        facilitatorStatus: 'BOTCHAIN_ADAPTER_ACTIVE',
+        instructions: `Transfer ${routeConfig.price} to ${PAY_TO} on BOT Chain (Chain ID 968) and provide { txHash } to settle.`,
+      });
+    }
+
+    // Verify on-chain transaction receipt if provided
+    try {
+      const receipt = await txVerifier.verifyReceipt(txHash);
+      if (!receipt.isValid) {
+        return res.status(402).json({ error: 'Transaction reverted on-chain on BOT Chain Testnet.' });
+      }
+      return next();
+    } catch (err: any) {
+      return res.status(402).json({
+        statusCode: 402,
+        error: 'Payment Verification Failed',
+        reason: err.message,
+      });
+    }
+  };
+}
+
+app.use(createX402PaywallMiddleware());
+
+// --- 1. Public Web 4.0 Dashboard ---
 app.get('/', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(renderDashboardHtml());
@@ -121,7 +123,7 @@ app.get('/dashboard', (_req: Request, res: Response) => {
   res.send(renderDashboardHtml());
 });
 
-// --- 3. Public Health & Reality Diagnostics ---
+// --- 2. Public Health & Reality Diagnostics ---
 app.get('/health', async (_req: Request, res: Response) => {
   try {
     const health = await checkRpcHealth('https://rpc.bohr.life', 968);
@@ -161,7 +163,7 @@ app.get('/api/health', async (_req: Request, res: Response) => {
   }
 });
 
-// --- 4. Bazaar Catalog ---
+// --- 3. Bazaar Catalog ---
 app.get('/api/bazaar', (_req: Request, res: Response) => {
   res.json({
     success: true,
@@ -171,7 +173,7 @@ app.get('/api/bazaar', (_req: Request, res: Response) => {
   });
 });
 
-// --- 5. AI Agentics Chat & Spending ---
+// --- 4. AI Agentics Chat & Spending ---
 app.post('/api/v1/agent/chat', async (req: Request, res: Response) => {
   const { prompt, provider = 'gemini-2.5-pro', agentId = 'default-agent' } = req.body;
 
@@ -205,7 +207,7 @@ app.post('/api/v1/agent/chat', async (req: Request, res: Response) => {
   });
 });
 
-// --- 6. EIP-681 Payment QR Generator ---
+// --- 5. EIP-681 Payment QR Generator ---
 app.get('/api/wallet/qr', async (req: Request, res: Response) => {
   try {
     const amount = (req.query.amount as string) ?? '0.001';
@@ -221,7 +223,7 @@ app.get('/api/wallet/qr', async (req: Request, res: Response) => {
   }
 });
 
-// --- 7. Protected Microservices (Dispatched after x402 settlement) ---
+// --- 6. Protected Microservices (Dispatched after x402 settlement) ---
 app.post('/api/v1/agent/conway-predict', (_req: Request, res: Response) => {
   conwayState = conwayState.step();
   const txAutomaton = new TransactionAutomaton('CONFIRMED');
