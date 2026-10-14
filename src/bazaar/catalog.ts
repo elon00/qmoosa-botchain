@@ -9,7 +9,7 @@ export interface BazaarService {
   description: string;
   endpoint: string;
   priceQbot: string;
-  priceRaw: bigint;
+  priceRaw: string;
   category: 'AI_AGENTICS' | 'CONWAY_COMPUTE' | 'DEPIN_TELEMETRY' | 'PQC_SECURITY';
   status: 'ACTIVE';
 }
@@ -21,7 +21,7 @@ export const BAZAAR_SERVICES: BazaarService[] = [
     description: 'Deterministic cellular automaton future oscillator computation and glider phase tracking.',
     endpoint: '/api/v1/agent/conway-predict',
     priceQbot: '0.001',
-    priceRaw: 1_000_000_000_000_000n, // 0.001 * 10^18
+    priceRaw: '1000000000000000', // 0.001 * 10^18
     category: 'CONWAY_COMPUTE',
     status: 'ACTIVE',
   },
@@ -31,7 +31,7 @@ export const BAZAAR_SERVICES: BazaarService[] = [
     description: 'Off-chain ML-DSA-65 post-quantum cryptographic digest generation and tamper verification seal.',
     endpoint: '/api/v1/agent/pqc-seal',
     priceQbot: '0.002',
-    priceRaw: 2_000_000_000_000_000n, // 0.002 * 10^18
+    priceRaw: '2000000000000000', // 0.002 * 10^18
     category: 'PQC_SECURITY',
     status: 'ACTIVE',
   },
@@ -41,7 +41,7 @@ export const BAZAAR_SERVICES: BazaarService[] = [
     description: 'Real-time telemetry, bandwidth, latency, and proof-of-work/stake audit for BOT Chain DePIN nodes.',
     endpoint: '/api/v1/agent/depin-telemetry',
     priceQbot: '0.003',
-    priceRaw: 3_000_000_000_000_000n, // 0.003 * 10^18
+    priceRaw: '3000000000000000', // 0.003 * 10^18
     category: 'DEPIN_TELEMETRY',
     status: 'ACTIVE',
   },
@@ -51,7 +51,7 @@ export const BAZAAR_SERVICES: BazaarService[] = [
     description: 'High-assurance LLM routing with budget enforcement and prompt injection sanitization.',
     endpoint: '/api/v1/agent/reasoning',
     priceQbot: '0.005',
-    priceRaw: 5_000_000_000_000_000n, // 0.005 * 10^18
+    priceRaw: '5000000000000000', // 0.005 * 10^18
     category: 'AI_AGENTICS',
     status: 'ACTIVE',
   },
