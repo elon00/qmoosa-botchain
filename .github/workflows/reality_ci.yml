@@ -30,16 +30,10 @@ jobs:
           cache: 'npm'
 
       - name: Install Pinned Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Compile TypeScript Build
         run: npm run build
-
-      - name: Clone Upstream REA & Raven Tools for Sandbox Verification
-        run: |
-          mkdir -p sandbox/tools
-          git clone --depth 1 https://github.com/morluto/rea.git sandbox/tools/rea || true
-          git clone --depth 1 https://github.com/EverMind-AI/Raven.git sandbox/tools/raven || true
 
       - name: Execute Lane 1 Deterministic Unit Tests (23/23 Tests)
         run: npm run test:lane1
@@ -79,7 +73,7 @@ jobs:
           node-version: 22.x
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Enforce Mainnet Spending Lock (MAINNET_LOCKED = true)
         run: |

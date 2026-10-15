@@ -1,0 +1,64 @@
+name: Engineering Automation (No Mainnet)
+on:
+  push:
+    branches: [main, audit/**]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: engineering-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engineering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Reproducible dependency installation
+        run: npm ci
+      - name: Compile
+        run: npm run build
+      - name: Deterministic unit tests
+        run: npm run test:lane1
+      - name: Static heuristics (not an audit)
+        run: npm run rea:audit
+      - name: RSI experiments (not accepted self-modification)
+        run: npm run raven:rsi
+      - name: Production dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+      - name: Upload non-certifying engineering reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engineering-evidence
+          if-no-files-found: warn
+          path: reports/*.json
+
+  release-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Production release gate (must fail until actual independent evidence)
+        run: npm run mission:verify
+      - name: Preserve gate report even if blocked
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-gate-evidence
+          if-no-files-found: warn
+          path: reports/REALITY_EVIDENCE.json
