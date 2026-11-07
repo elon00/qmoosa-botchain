@@ -1,23 +1,167 @@
 {
-  "tool": "REA (Reverse Engineering & Architectural Analysis)",
-  "upstream": "https://github.com/morluto/rea",
-  "timestamp": "2026-10-14T21:24:24.220Z",
-  "status": "AUDIT_PASSED",
-  "contractAudit": {
-    "contract": "contracts/QBOTToken.sol",
-    "invariants": {
-      "hasAccessControl": true,
-      "hasInflationCeiling": true,
-      "hasInitialSupply": true,
-      "hasPauseModifier": true
+  "engine": "REA_Reverse_Engineer_Anything",
+  "status": "STRUCTURE_RECONSTRUCTED",
+  "analyzed_files": 53,
+  "manifest": {
+    "index.html": {
+      "bytes": 10177
     },
-    "securityScore": 100
+    "package-lock.json": {
+      "bytes": 498355
+    },
+    "package.json": {
+      "bytes": 1213
+    },
+    "README.md": {
+      "bytes": 5911
+    },
+    "tsconfig.json": {
+      "bytes": 418
+    },
+    "agents\\multimodel_agent_orchestrator.py": {
+      "bytes": 1299
+    },
+    "automations\\raven_rsi_optimizer.py": {
+      "bytes": 1353
+    },
+    "automations\\rea_runtime_analyzer.py": {
+      "bytes": 791
+    },
+    "contracts\\QBOTToken.sol": {
+      "bytes": 8317
+    },
+    "conway\\conway_automaton_engine.rs": {
+      "bytes": 1700
+    },
+    "conway\\conway_engine.py": {
+      "bytes": 1654
+    },
+    "docs\\ARCHITECTURE.md": {
+      "bytes": 3946
+    },
+    "docs\\SCORECARD_100.md": {
+      "bytes": 4852
+    },
+    "docs\\SECURITY.md": {
+      "bytes": 1897
+    },
+    "docs\\TOKENOMICS.md": {
+      "bytes": 2688
+    },
+    "integrations\\quicknode_provider.py": {
+      "bytes": 1186
+    },
+    "integrations\\x402_bazaar_gateway.py": {
+      "bytes": 1324
+    },
+    "reports\\FINAL_SCORECARD.json": {
+      "bytes": 474
+    },
+    "reports\\RAVEN_RSI.json": {
+      "bytes": 765
+    },
+    "reports\\REALITY_EVIDENCE.json": {
+      "bytes": 3103
+    },
+    "reports\\REA_ANALYSIS.json": {
+      "bytes": 667
+    },
+    "sandbox\\README.md": {
+      "bytes": 1278
+    },
+    "scripts\\raven_rsi.ts": {
+      "bytes": 2764
+    },
+    "scripts\\reality_gate.ts": {
+      "bytes": 7997
+    },
+    "scripts\\rea_audit.ts": {
+      "bytes": 2551
+    },
+    "scripts\\rea_inspector.py": {
+      "bytes": 1485
+    },
+    "scripts\\rsi_engine.py": {
+      "bytes": 2039
+    },
+    "security\\pqc_quantum_shield.py": {
+      "bytes": 1248
+    },
+    "src\\server.ts": {
+      "bytes": 10126
+    },
+    "tests\\reality_check_harness.py": {
+      "bytes": 1250
+    },
+    "tests\\smoke_sanity_regression_suite.py": {
+      "bytes": 2106
+    },
+    "tests\\__init__.py": {
+      "bytes": 0
+    },
+    "tokenomics\\unlimited_tokenomics_model.py": {
+      "bytes": 1445
+    },
+    ".github\\workflows\\codeql-reality-check.yml": {
+      "bytes": 819
+    },
+    ".github\\workflows\\deploy_preview.yml": {
+      "bytes": 1943
+    },
+    ".github\\workflows\\qmoosa-rsi-rea-sync.yml": {
+      "bytes": 531
+    },
+    ".github\\workflows\\reality_ci.yml": {
+      "bytes": 3043
+    },
+    "src\\agents\\policy.ts": {
+      "bytes": 3541
+    },
+    "src\\agents\\router.ts": {
+      "bytes": 2590
+    },
+    "src\\bazaar\\catalog.ts": {
+      "bytes": 2335
+    },
+    "src\\chains\\botchain.ts": {
+      "bytes": 3261
+    },
+    "src\\chains\\transaction-verifier.ts": {
+      "bytes": 2425
+    },
+    "src\\contracts\\qbot.ts": {
+      "bytes": 5911
+    },
+    "src\\core\\conway.ts": {
+      "bytes": 4458
+    },
+    "src\\crypto\\mldsa.ts": {
+      "bytes": 3337
+    },
+    "src\\ui\\dashboard.ts": {
+      "bytes": 18849
+    },
+    "src\\wallet\\qr.ts": {
+      "bytes": 4129
+    },
+    "tests\\lane1\\agent_policy.test.ts": {
+      "bytes": 1930
+    },
+    "tests\\lane1\\conway_automaton.test.ts": {
+      "bytes": 2868
+    },
+    "tests\\lane1\\pqc_mldsa.test.ts": {
+      "bytes": 2641
+    },
+    "tests\\lane1\\qbot_token.test.ts": {
+      "bytes": 3157
+    },
+    "tests\\lane1\\qr_wallet.test.ts": {
+      "bytes": 2637
+    },
+    "tests\\lane2\\reality_network.test.ts": {
+      "bytes": 2924
+    }
   },
-  "dependencyAudit": {
-    "dependenciesCount": 8,
-    "devDependenciesCount": 5,
-    "pqcStandard": "NIST FIPS 204 ML-DSA-65",
-    "paymentProtocol": "@x402/express (HTTP 402 Paywall)"
-  },
-  "findings": []
+  "timestamp": 1794020231
 }
