@@ -147,7 +147,40 @@ async function verifyRealityGate() {
     evidence: 'Complete documentation suite verified with MAINNET_LOCKED=true security enforcement',
   });
 
-  const totalAllocated = scores.reduce((sum, s) => sum + s.pointsAllocated, 0);
+  // STRICT RELEASE POLICY: source presence and one RPC response are not production evidence.
+// Current scoring above remains a legacy smoke-test diagnostic only; it cannot authorize mainnet.
+const mandatoryEvidence = [
+  'compiled-contract-bytecode-and-invariant-tests',
+  'independent-contract-security-audit',
+  'real-testnet-contract-deployment-and-explorer-receipts',
+  'x402-facilitator-supported-network-and-settlement-receipts',
+  'pqc-known-answer-vectors-and-negative-tests',
+  'real-ai-provider-integration-and-budget-policy',
+  'wallet-signature-and-qr-e2e-tests',
+  'secret-scanning-sca-and-threat-model',
+  'deployment-rollback-and-operations-drill',
+  'independent-owner-release-authorization',
+];
+const strictEvidencePath = path.resolve('reports/PRODUCTION_EVIDENCE.json');
+const strictEvidence = fs.existsSync(strictEvidencePath)
+  ? JSON.parse(fs.readFileSync(strictEvidencePath, 'utf8'))
+  : null;
+// Human-entered manifests are inventory, not proof. Cryptographic receipts, independent reviews,
+// artifact digests and execution checks must be verified by separate gate implementations.
+const verifiedEvidence = strictEvidence?.verifiedByIndependentGates === true
+  && strictEvidence?.commitSha === process.env.GITHUB_SHA
+  && Array.isArray(strictEvidence?.verifiedGateIds)
+  && mandatoryEvidence.every(id => strictEvidence.verifiedGateIds.includes(id));
+const productionEvidenceVerified = false; // Fail closed until independent evidence verifiers exist.
+const productionAuthorized = verifiedEvidence && productionEvidenceVerified;
+if (!productionAuthorized) {
+  for (const row of scores) {
+    row.status = 'BLOCKED';
+    row.pointsAwarded = 0;
+    row.evidence = 'Legacy smoke test only; independent production evidence is absent or unverified.';
+  }
+}
+const totalAllocated = scores.reduce((sum, s) => sum + s.pointsAllocated, 0);
   const totalAwarded = scores.reduce((sum, s) => sum + s.pointsAwarded, 0);
 
   console.log('\n--- VERIFIED SCORECARD BREAKDOWN ---');
@@ -163,7 +196,9 @@ async function verifyRealityGate() {
     project: 'QMOOSA BOT CHAIN — Autonomous AI Payment & Agentic Hub',
     targetScore: 100,
     actualScore: totalAwarded,
-    status: totalAwarded === 100 ? '100/100 VERIFIED' : 'INCOMPLETE',
+    status: productionAuthorized && totalAwarded === 100 ? '100/100 VERIFIED' : 'BLOCKED_MISSING_INDEPENDENT_EVIDENCE',
+    mandatoryEvidence,
+    productionAuthorized,
     mainnetLocked: MAINNET_LOCKED,
     testnetChainId: 968,
     testnetBlockNumber: liveBlock.toString(),

@@ -1,5 +1,8 @@
 # QMOOSA BOT CHAIN — 100/100 Production Readiness Scorecard
 
+> **Audit correction (15 Oct 2026):** The earlier `100/100 VERIFIED` statement is **not a production certification**. Previous score calculations could award full marks from source-file presence and one RPC response. See [Evidence-First Scorecard](EVIDENCE_FIRST_SCORECARD.md) for missing proof and mandatory release blockers. Mainnet remains locked.
+
+
 Target: **100/100 Evidence-Verified Buildathon & Production Readiness**  
 Status: **100/100 VERIFIED PASS (Zero Simulation)**  
 Mainnet Policy: **LOCKED (Zero Premature Spending)**

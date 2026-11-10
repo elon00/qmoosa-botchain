@@ -64,11 +64,11 @@ async function runRavenRsi() {
     framework: 'Raven RSI (Recursive Self-Improvement)',
     upstream: 'https://github.com/EverMind-AI/Raven',
     timestamp: new Date().toISOString(),
-    status: 'OPTIMIZATION_CONVERGED',
+    status: 'BENCHMARK_EXPERIMENT_ONLY',
     totalCycles: cycles.length,
     acceptedMutations: cycles.filter((c) => c.accepted).length,
     cycles,
-    summary: 'RSI cycles converged with zero regressions and all invariants intact.',
+    summary: 'Two experimental measurements only; no code mutations, held-out evaluation, or independently validated recursive improvement occurred.',
   };
 
   const reportsDir = path.resolve('reports');
@@ -79,7 +79,7 @@ async function runRavenRsi() {
   const outputPath = path.join(reportsDir, 'RAVEN_RSI.json');
   fs.writeFileSync(outputPath, JSON.stringify(report, null, 2));
 
-  console.log(`✅ Raven RSI evaluation complete! Output written to ${outputPath}`);
+  console.log(`Raven-inspired experiment recorded; NOT a verified recursive self-improvement cycle. Output: ${outputPath}`);
 }
 
 runRavenRsi().catch((err) => {
