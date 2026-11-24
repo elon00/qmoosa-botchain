@@ -1,0 +1,12 @@
+{
+  "name": "qmoosa-botchain",
+  "chain": "EVM (Ethereum / Base / Polygon / Arbitrum)",
+  "distDir": "dist",
+  "storage": {
+    "provider": "ipfs",
+    "pin": true
+  },
+  "domains": [
+    "qmoosa-botchain.eth.limo"
+  ]
+}
